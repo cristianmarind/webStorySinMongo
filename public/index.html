@@ -3,18 +3,72 @@
 <head>
 	<title>app con socket.io</title>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-	<link rel="stylesheet" type="text/css" href="style.css">
+	 <!-- Diseño MaterializeCSS -->
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+	 <!-- Ajustes -->
+	 <link rel="stylesheet" type="text/css" href="style.css">
+
 </head>
 <body>
-	<input type="text" id="author" placeholder="Pon tu nombre">
-	<br>
-	<div>
-		<p id="pStory"></p>
-	</div>
-	<br>
-	<input type="text" id="text" placeholder="Aporta a la historia">
-	<br>
-	<input type="submit" value="Enviar" id="enviar">
+		<div id="index-banner" class=" teal darken-4">
+				<div class="section">
+					<div class="container">
+						<h1 class="header center white-text text-lighten-2">Workshop Node.js</h1>
+					</div>
+				</div>
+		</div>
+	<div class="container">
+		<div class="row">
+			<div class="col m8 s12">
+				<div class="card">
+						<div class="card-image">
+							<img class="teal darken-3" style="height:90px" />
+							<span class="card-title">Historia</span>
+						</div>
+						<div class="card-content">
+								<p id="pStory"></p>
+						</div>
+				</div>
+				<div class="row">
+					<div class="row">
+						<div class="col m12 s12">
+							<div class="card-panel">
+								<form onsubmit="return addStory(this)">
+									<div class="input-field">
+										<input id="author" type="text">
+										<label for="author">Nombre</label>
+									</div>
+									Palabra actual: <div class="chip teal white-text" id="wordText">Caballo</div>
+									<div class="input-field">
+										<textarea id="message" class="materialize-textarea "></textarea>
+										<label for="message">Mensaje</label>
+									</div>
+
+									<input type="submit" value="Enviar" id="enviar" class="waves-effect waves-light btn">	</form>
+							</div>
+						</div>	
+					</div>		
+				</div>					
+			</div>
+			<div class="col m4 s12">
+				<div class="card teal">
+						<div class="card-image">
+							<img class="teal darken-3" style="height:90px" />
+							<span class="card-title">Agregar palabras</span>
+						</div>
+						<div class="card-content white-text">
+							<form >		
+								<input id="word" type="text" class="word-input white-text" placeholder="Palabra">
+								<input type="submit" value="Enviar" id="enviar" class="waves-effect waves-light btn white teal darken-4">
+							</form>	
+				</div>
+			</div>
+		</div>
+		  
+	</div> <!-- /container -->
 </body>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 <script type="text/javascript" src="main.js"></script>
+
 </html>

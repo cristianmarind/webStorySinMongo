@@ -1,29 +1,41 @@
 var socket = io.connect('http://localhost:8080/', {'forceNew': true});
 var pStory = document.getElementById('pStory');
+var palabraActual;
 
-socket.on('story-new-part', function (data) {
-    renderStoryPart(data);
+socket.on('story', function (data) {
+	renderStory(data);
+	if(data.length > 0){
+		Materialize.toast('Hay una nueva oración en la historia', 2000);
+   }	
 });
 
-socket.on('initial', function (data) {
-    renderStory(data);
+socket.on('new-word', function (data) {
+    renderWord(data);
 });
 
-document.getElementById('enviar').onclick = function(){
+function addStory(e) {
 	var part = {
 		author: document.getElementById('author').value,
-		text: document.getElementById('text').value
+		text: document.getElementById('message').value
 	}
-	socket.emit('new-part', part);
+	socket.emit('story', part);
 };
 
-function renderStoryPart(newPart){
-	console.log(pStory);
-	pStory.innerHTML = pStory.innerHTML+newPart.text+" ";
+function renderWord(wordGet){
+	console.log("Palabra obtenida: " + wordGet);
+	pStory.innerHTML = wordText.innerHTML+wordGet.text+" ";
 }
 
-function renderStory(story){
-	for (var i = 0; i < story.length; i++) {
-		pStory.innerHTML = pStory.innerHTML+story[i].text+" ";
-	}
+function renderStory(data){
+	var html = data.map(function(elem, index) {
+		return(`<span class="tooltipped" data-position="top" data-delay="50" data-tooltip="Autor: ${elem.author}">${elem.text}</span>`);
+	  }).join(" ");
+	  document.getElementById('pStory').innerHTML = html;
+	  $('.tooltipped').tooltip();
 }
+
+(function($){
+	$(function(){
+	  $('.parallax').parallax();
+	}); // end of document ready
+  })(jQuery); // end of jQuery name space

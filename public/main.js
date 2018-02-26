@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8080/', {'forceNew': true});
+var socket = io.connect('http://localhost:4100/', {'forceNew': true});
 var pStory = document.getElementById('pStory');
 var palabraActual;
 
@@ -13,7 +13,7 @@ socket.on('new-word', function (data) {
     renderWord(data);
 });
 
-function addStory(e) {
+document.getElementById('enviar').onclick = function(){
 	var part = {
 		author: document.getElementById('author').value,
 		text: document.getElementById('message').value

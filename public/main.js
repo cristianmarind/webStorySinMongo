@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8080/', {'forceNew': true});
+var socket = io.connect('http://localhost:4100/', {'forceNew': true});
 var pStory = document.getElementById('pStory');
 
 socket.on('story-new-part', function (data) {

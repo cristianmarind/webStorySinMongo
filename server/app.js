@@ -1,16 +1,17 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(express.static('public'));
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 const port=4100;
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 const dbMongo='mongodb://localhost:27017/bdStory';
 const mongoose = require('mongoose');
 const Word=require('./Model/word');
 var storyParts = [];
+
 
 mongoose.connect(dbMongo, (err, res) => {
     if (err) {
@@ -46,8 +47,6 @@ app.get('/api/words', (req, res) => {
         res.status(200).send({ words: words });
     });
 });
-
-
 
 io.on('connection', function(socket){
 	console.log("se conecto alguien con socket");

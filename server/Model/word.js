@@ -18,6 +18,4 @@ module.exports=mongoose.model('Word',wordShchema);
 
 /*
  const Palabra= require('./models/Palabra');
-
-
 */

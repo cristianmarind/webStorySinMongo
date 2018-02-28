@@ -1,8 +1,13 @@
 var express = require('express');
-var bodyParser = require('body-parser');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
+app.use(express.static('public'));
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 const port=4100;
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -10,6 +15,7 @@ app.use(bodyParser.json());
 const dbMongo='mongodb://localhost:27017/bdStory';
 const mongoose = require('mongoose');
 const Word=require('./Model/word');
+
 var storyParts = [];
 
 
@@ -19,9 +25,6 @@ mongoose.connect(dbMongo, (err, res) => {
     } else {
         console.log("conecion establecida");
     }
-    app.listen(port, () => {
-        console.log(`API corriendo por el puerto: ${port}`);
-    })
 });
 
 // ingresar palabra a la bd
@@ -48,15 +51,18 @@ app.get('/api/words', (req, res) => {
     });
 });
 
-io.on('connection', function(socket){
-	console.log("se conecto alguien con socket");
-	socket.emit('initial', storyParts);
+io.on('connection', function(socket) {
+	console.log('Alguien se ha conectado con Sockets');
+	socket.emit('story', storyParts);
+  
+	socket.on('story', function(data) {
+	  storyParts.push(data);
+	  io.sockets.emit('story', storyParts);
+	});
+  });
 
-	socket.on('new-part', function(data){
-		storyParts.push(data);
-		io.sockets.emit('story-new-part', data);
-	})
+
+
+server.listen(4100, function(){
+	console.log("Corriendo por el puerto 8080")
 });
-
-
-

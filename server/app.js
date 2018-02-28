@@ -1,25 +1,32 @@
 var express = require('express');
+var cors = require('cors')
+var bodyParser = require('body-parser');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
-app.use(express.static('public'));
-
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-const port=4100;
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-const dbMongo='mongodb://localhost:27017/bdStory';
-const mongoose = require('mongoose');
-const Word=require('./Model/word');
-
 var storyParts = [];
 
+var mongoose = require('mongoose');
+var Word=require('./Model/word');
+const dbMongo='mongodb://localhost:27017/bdStory';
+const port=8085;
 
-mongoose.connect(dbMongo, (err, res) => {
+
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cors());
+
+/*
+app.options('*', cors())
+app.use(function (req, res, next) {
+   res.header('Access-Control-Allow-Origin', '*')
+   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+   next()
+ })
+*/
+
+mongoose.connect(dbMongo, function(err, res){
     if (err) {
         return console.log(`Error al conectarse a la base de datos: ${err}`);
     } else {
@@ -28,21 +35,22 @@ mongoose.connect(dbMongo, (err, res) => {
 });
 
 // ingresar palabra a la bd
-app.post('/api/word',(req,res)=>{
+app.post('/api/setWord',function(req, res){
 	let word = new Word();
-	word.word=req.body.word;
-	word.save((err, wordStored) => {
+    word.word=req.param('inputWord');
+	word.save((err, storedWord) => {
         if (err) {
             res.status(500) // los 500 son errores del Servidor
-            res.send({ message: `Erro al salvar en la BD ${err}` });
-        } else {
+            res.send({ message: `Error al guardar elemento en la BD ${err}` });
+        }else {
             res.status(200);
-            res.send({ word: wordStored });
+            res.redirect('/'); // luego de insertar redireciona
+            res.end(); // finalizar la petición
         }
     });
 });
 
-app.get('/api/words', (req, res) => {
+app.get('/api/words', function(req, res){
     // con el {} trae todas las palabras
     Word.find({}, (err, words) => {
         if (err) return res.status(500).send({ message: `Error al buscar ${err}` });
@@ -57,12 +65,16 @@ io.on('connection', function(socket) {
   
 	socket.on('story', function(data) {
 	  storyParts.push(data);
-	  io.sockets.emit('story', storyParts);
-	});
-  });
-
-
-
-server.listen(4100, function(){
-	console.log("Corriendo por el puerto 8080")
+      io.sockets.emit('story', storyParts);
+      Word.find({}, (err, words) => {
+        var number=Math.floor(Math.random()*words.length);  
+        io.emit('new-word',words[number].word);
+    });	
 });
+});
+
+
+server.listen(port, function(){
+	console.log("Corriendo por el puerto "+port)
+});
+

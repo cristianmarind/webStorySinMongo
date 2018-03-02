@@ -3,7 +3,7 @@
 const mongoose= require('mongoose');
 const Schema=mongoose.Schema
 
-const wordShchema= Schema(
+const wordSchema= Schema(
     {
      word:String
     }
@@ -12,7 +12,7 @@ const wordShchema= Schema(
 // para exportar el modelo y que se pueda usar desde cualquier
 // parte de la aplicación 
 
-module.exports=mongoose.model('Word',wordShchema);
+module.exports=mongoose.model('Word',wordSchema);
 
 // para importarlo de hace lo siguiente
 

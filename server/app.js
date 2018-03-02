@@ -19,7 +19,7 @@ app.use(cors());
 
 mongoose.connect(dbMongo, function(err, res){
     if (err) {
-        return console.log(`Error al conectarse a la base de datos: ${err}`);
+        console.log(`Error al conectarse a la base de datos: ${err}`);
     } else {
         console.log("conecion establecida");
     }

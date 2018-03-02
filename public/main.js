@@ -24,6 +24,7 @@ function sendStory(author, text) {
 				text: text
 			}
 			socket.emit('sent-story', part);
+			document.getElementById('message').value = "";
 		}
 		else {
 			alert("La palabra actual no está en el texto");

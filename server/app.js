@@ -10,21 +10,12 @@ var mongoose = require('mongoose');
 var Word=require('./Model/word');
 const dbMongo='mongodb://localhost:27017/bdStory';
 const port=8080;
-var nowWord = "-"; 
+var nowWord = ""; 
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
-
-/*
-app.options('*', cors())
-app.use(function (req, res, next) {
-   res.header('Access-Control-Allow-Origin', '*')
-   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-   next()
- })
-*/
 
 mongoose.connect(dbMongo, function(err, res){
     if (err) {
@@ -59,19 +50,19 @@ app.get('/api/words', function(req, res){
     });
 });
 
-io.on('connection', function(socket) {
-	console.log('Alguien se ha conectado con Sockets');
-	socket.emit('story', storyParts);
+io.on('connection', function (socket) {
+    console.log('Alguien se ha conectado con Sockets');
+    socket.emit('story', storyParts);
     socket.emit('new-word', nowWord);
 
-	socket.on('story', function(data) {
-	  storyParts.push(data);
-      io.sockets.emit('story', storyParts);
-      randomWord(function(err , data){
-        io.emit('new-word', data);
-      });
-     
-});
+    socket.on('sent-story', function (data) {
+        storyParts.push(data);
+        io.sockets.emit('story', storyParts);
+        randomWord(function (err, data) {
+            io.emit('new-word', data);
+        });
+
+    });
 });
 
 function randomWord(callback){

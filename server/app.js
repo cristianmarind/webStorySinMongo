@@ -9,8 +9,8 @@ var storyParts = [];
 var mongoose = require('mongoose');
 var Word=require('./Model/word');
 const dbMongo='mongodb://localhost:27017/bdStory';
-const port=8085;
-
+const port=8080;
+var nowWord = "-"; 
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -62,17 +62,25 @@ app.get('/api/words', function(req, res){
 io.on('connection', function(socket) {
 	console.log('Alguien se ha conectado con Sockets');
 	socket.emit('story', storyParts);
-  
+    socket.emit('new-word', nowWord);
+
 	socket.on('story', function(data) {
 	  storyParts.push(data);
       io.sockets.emit('story', storyParts);
-      Word.find({}, (err, words) => {
-        var number=Math.floor(Math.random()*words.length);  
-        io.emit('new-word',words[number].word);
-    });	
+      randomWord(function(err , data){
+        io.emit('new-word', data);
+      });
+     
 });
 });
 
+function randomWord(callback){
+    Word.find({}, (err, words) => {
+        var number=Math.floor(Math.random()*words.length);  
+        nowWord = words[number].word;
+        callback(0, nowWord);
+    });
+}
 
 server.listen(port, function(){
 	console.log("Corriendo por el puerto "+port)

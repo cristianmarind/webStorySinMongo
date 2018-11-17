@@ -55,10 +55,9 @@ io.on('connection', function (socket) {
 function randomWord(callback){
     var number=Math.floor(Math.random()*arr.length);  
     if(number == 0){
-        callback(0, "No hay palabras");
+        callback(0, "");
+        return;
     }
-    console.log(arr);
-    
     nowWord = arr[number].getWord();
     callback(0, nowWord);
 }

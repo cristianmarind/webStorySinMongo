@@ -6,48 +6,35 @@ var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 var storyParts = [];
 
-var mongoose = require('mongoose');
 var Word=require('./Model/word');
-const dbMongo='mongodb://localhost:27017/bdStory';
 const port=8080;
 var nowWord = ""; 
+
+var arr = []
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect(dbMongo, function(err, res){
-    if (err) {
-        console.log(`Error al conectarse a la base de datos: ${err}`);
-    } else {
-        console.log("conecion establecida");
-    }
-});
-
 // ingresar palabra a la bd
 app.post('/api/setWord',function(req, res){
-	let word = new Word();
-    word.word=req.param('inputWord');
-	word.save((err, storedWord) => {
-        if (err) {
-            res.status(500) // los 500 son errores del Servidor
-            res.send({ message: `Error al guardar elemento en la BD ${err}` });
-        }else {
-            res.status(200);
-            res.redirect('/'); // luego de insertar redireciona
-            res.end(); // finalizar la petición
-        }
-    });
+    let word;
+    if (req.param('inputWord') === undefined) {
+        res.status(500) // los 500 son errores del Servidor
+        res.send({ message: `No se tiene parametro para el servicio` });
+    }else {
+        word = new Word(req.param('inputWord'));
+        arr.push(word);
+        res.status(200);
+        res.redirect('/'); // luego de insertar redireciona
+        res.end(); // finalizar la petición
+    } 
 });
 
 app.get('/api/words', function(req, res){
-    // con el {} trae todas las palabras
-    Word.find({}, (err, words) => {
-        if (err) return res.status(500).send({ message: `Error al buscar ${err}` });
-        if (!words) return res.status(404).send({ message: `No hay palabras` });
-        res.status(200).send({ words: words });
-    });
+    if (words.length == 0) return res.status(404).send({ message: `No hay palabras` });
+    res.status(200).send({ words: arr });
 });
 
 io.on('connection', function (socket) {
@@ -66,14 +53,17 @@ io.on('connection', function (socket) {
 });
 
 function randomWord(callback){
-    Word.find({}, (err, words) => {
-        var number=Math.floor(Math.random()*words.length);  
-        nowWord = words[number].word;
-        callback(0, nowWord);
-    });
+    var number=Math.floor(Math.random()*arr.length);  
+    if(number == 0){
+        callback(0, "No hay palabras");
+    }
+    console.log(arr);
+    
+    nowWord = arr[number].getWord();
+    callback(0, nowWord);
 }
 
-server.listen(port, function(){
+server.listen(process.env.PORT || port, function(){
 	console.log("Corriendo por el puerto "+port)
 });
 

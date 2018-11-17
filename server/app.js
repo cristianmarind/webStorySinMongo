@@ -7,7 +7,7 @@ var io = require('socket.io').listen(server);
 var storyParts = [];
 
 var Word=require('./Model/word');
-const port=8080;
+const port=3000;
 var nowWord = ""; 
 
 var arr = []
